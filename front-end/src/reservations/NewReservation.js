@@ -22,12 +22,8 @@ export default function NewReservation({edit, reservations}) {
     if(edit) {
         // if either of these don't exist, we cannot continue.
         if(!reservations || !reservation_id) return null;
-    
-        // let's try to find the corresponding reservation:
         const foundReservation = reservations.find((reservation) => 
             reservation.reservation_id === Number(reservation_id));
-    
-        // if it doesn't exist, or the reservation is booked, we cannot edit.
         if(!foundReservation || foundReservation.status !== "booked") {
             return <p>Only booked reservations can be edited.</p>;
         }
