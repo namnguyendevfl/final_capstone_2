@@ -7,6 +7,11 @@ export default function ReservationRow({ reservation }) {
 	if(!reservation) return null;
 
     const handleCancel = () => {
+        if(window.confirm("Do you want to cancel this reservation? This cannot be undone.")) {
+            // api call will go here eventually
+    
+            window.location.reload(); 
+        }
 	}
 	return (
 		<tr>
@@ -43,14 +48,6 @@ export default function ReservationRow({ reservation }) {
 					</td>
 				</>
 			}
-            
-
-			{ /* lastly, the instructions call for a "seat" button. here is where i put it: */ }
-			{/* <td>
-				<a href={`/reservations/${reservation.reservation_id}/seat`}>
-					<button type="button">Seat</button>
-				</a>
-			</td> */}
 		</tr>
 	);
 }

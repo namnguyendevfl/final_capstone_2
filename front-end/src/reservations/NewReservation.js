@@ -3,8 +3,9 @@ import { useHistory, useParams } from "react-router";
 import ErrorAlert from "../layout/ErrorAlert";
 
 
-export default function NewReservation() {
-    const history = useHistory()
+export default function NewReservation({edit, reservations}) {
+    const history = useHistory();
+    const { reservation_id } = useParams();
     const initialReservation = {
         first_name: "",
 		last_name: "",
@@ -18,7 +19,30 @@ export default function NewReservation() {
     // Working on validation
     const [errors, setErrors] = useState([]);
 
-        
+    if(edit) {
+        // if either of these don't exist, we cannot continue.
+        if(!reservations || !reservation_id) return null;
+    
+        // let's try to find the corresponding reservation:
+        const foundReservation = reservations.find((reservation) => 
+            reservation.reservation_id === Number(reservation_id));
+    
+        // if it doesn't exist, or the reservation is booked, we cannot edit.
+        if(!foundReservation || foundReservation.status !== "booked") {
+            return <p>Only booked reservations can be edited.</p>;
+        }
+        setReservationData({
+            first_name: foundReservation.first_name,
+            last_name: foundReservation.last_name,
+            mobile_number: foundReservation.mobile_number,
+            reservation_date: foundReservation.reservation_date,
+            reservation_time: foundReservation.reservation_time,
+            people: foundReservation.people,
+            reservation_id: foundReservation.reservation_id,
+        });
+    }
+
+
     const validateDate = (foundErrors) => {
         const reserveDate = new Date(`${reservationData.reservation_date}T${reservationData.reservation_time}:00.000`)
         console.log(reserveDate)

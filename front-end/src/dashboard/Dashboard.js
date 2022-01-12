@@ -18,22 +18,6 @@ import TableRow from "./TableRow";
 function Dashboard({ date, reservations, reservationsError, tables, tablesError, loadDashboard }) {
   
   const history = useHistory();
-  // const [tables, setTables] = useState([]);
-  // const [tablesError, setTablesError] = useState(null);
-
-  // const [reservations, setReservations] = useState([]);
-  // const [reservationsError, setReservationsError] = useState(null);
-
-  // useEffect(loadDashboard, [date]);
-
-  // function loadDashboard() {
-  //   const abortController = new AbortController();
-  //   setReservationsError(null);
-  //   listReservations({ date }, abortController.signal)
-  //     .then(setReservations)
-  //     .catch(setReservationsError);
-  //   return () => abortController.abort();
-  // }
 
   const renderedReservationBody = () => {
     return reservations.map((reservation) => 
@@ -64,6 +48,8 @@ function Dashboard({ date, reservations, reservationsError, tables, tablesError,
 					<th scope="col">Time</th>
 					<th scope="col">People</th>
 					<th scope="col">Status</th>
+          <th scope="col">Edit</th>
+			    <th scope="col">Cancel</th>
 					<th scope="col">Seat Table</th>
 				</tr>
 			</thead>
