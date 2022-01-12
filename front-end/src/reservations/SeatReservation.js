@@ -21,8 +21,8 @@ export default function SeatReservation({ reservations, tables }) {
 	
 	const validateSeat = () => {
 		const foundErrors = [];
-		const foundTable = tables.find((table) => table.table_id === tableId);
-		const foundReservation = reservations.find((reservation) => reservation.reservation_id === reservation_id);
+		const foundTable = tables.find((table) => table.table_id === Number(tableId));
+		const foundReservation = reservations.find((reservation) => reservation.reservation_id === Number(reservation_id));
 
 		if(!foundTable) {
 			foundErrors.push("The table you selected does not exist.");
@@ -53,16 +53,18 @@ export default function SeatReservation({ reservations, tables }) {
     };
 
 	return (
-		<form>
+		<form onSubmit = {handleSubmit}>
 		<label htmlFor="table_id">Choose table:</label>
 		<select 
 			name="table_id" 
 			id="table_id"
+            value={tableId}
+			onChange={handleChange}
 		>
             {renderedTableOptions()}
 		</select>
 
-		<button type="submit" onClick={handleSubmit}>Submit</button>
+		<button type="submit" >Submit</button>
 		<button type="button" onClick={history.goBack}>Cancel</button>
 	</form>
 	);
