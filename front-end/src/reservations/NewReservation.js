@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useHistory, useParams } from "react-router";
+import ErrorAlert from "../layout/ErrorAlert";
 
 
 export default function NewReservation() {
@@ -13,6 +14,27 @@ export default function NewReservation() {
 		people: "",
     }
 
+    // Working on validation
+    const [errors, setErrors] = useState([]);
+    const validateDate = () => {
+        const reserveDate = new Date(reservationData.reservation_date);
+        const todaysDate = new Date()
+        const foundErrors = [];
+        // the Date class has many functions, one of which returns the day (0 is sunday, 6 is saturday)
+        if (reserveDate.getDay() === 2) {
+            foundErrors.push({ message: "Reservations cannot be made on a Tuesday (Restaurant is closed)." });
+        }
+        if (reserveDate < todaysDate) {
+            foundErrors.push({ message: "Reservations cannot be made in the past." });
+        }
+        setErrors(foundErrors);
+        if(foundErrors.length > 0) {
+            return false;
+        }
+        // if we get here, our reservation date is valid!
+        return true;
+    }
+
     const [reservationData, setReservationData] = useState(initialReservation)
     const handleChange = ({target: {name,value}}) => {
         setReservationData(prevData => ({
@@ -22,10 +44,17 @@ export default function NewReservation() {
     }
     const handleSubmit = (e) => {
         e.preventDefault();
-        history.push(`/dashboard?date=${reservationData.reservation_date}`)
+        if(validateDate()) {
+            history.push(`/dashboard?date=${reservationData.reservation_date}`);
+        }
+    }
+
+    const renderedErrors = () => {
+        return errors.map((error, idx) => <ErrorAlert key={idx} error={error} />);
     }
     return (
         <form onSubmit={handleSubmit}>
+            {renderedErrors()}
             <div>
                 <label htmlFor="first_name">First Name:&nbsp;</label>
                 <input 
@@ -34,7 +63,7 @@ export default function NewReservation() {
                     type="text"
                     onChange={handleChange}
                     value={reservationData.first_name}
-                    required
+                    // required
                 />
             </div>
 
@@ -46,7 +75,7 @@ export default function NewReservation() {
                     type="text"
                     onChange={handleChange}
                     value={reservationData.last_name}
-                    required
+                    // required
                 />
             </div>
 
@@ -58,7 +87,7 @@ export default function NewReservation() {
                     type="text"
                     onChange={handleChange}
                     value={reservationData.mobile_number}
-                    required
+                    // required
                 />
             </div>
 			
@@ -70,7 +99,7 @@ export default function NewReservation() {
                     type="date"
                     onChange={handleChange}
                     value={reservationData.reservation_date}
-                    required
+                    // required
                 />
             </div>
 			
@@ -82,7 +111,7 @@ export default function NewReservation() {
                     type="time"
                     onChange={handleChange}
                     value={reservationData.reservation_time}
-                    required
+                    // required
                 />
             </div>
 			
@@ -95,7 +124,7 @@ export default function NewReservation() {
                     min="1"
                     onChange={handleChange}
                     value={reservationData.people}
-                    required
+                    // required
                 />
             </div>
 
