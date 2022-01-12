@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { listReservations } from "../utils/api";
 import ErrorAlert from "../layout/ErrorAlert";
+import { previous, today, next } from "../utils/date-time";
+import { useHistory } from "react-router";
 
 /**
  * Defines the dashboard page.
@@ -9,6 +11,9 @@ import ErrorAlert from "../layout/ErrorAlert";
  * @returns {JSX.Element}
  */
 function Dashboard({ date }) {
+  
+  const history = useHistory();
+
   const [reservations, setReservations] = useState([]);
   const [reservationsError, setReservationsError] = useState(null);
 
@@ -31,6 +36,9 @@ function Dashboard({ date }) {
       </div>
       <ErrorAlert error={reservationsError} />
       {JSON.stringify(reservations)}
+      <button type="button" onClick={() => history.push(`/dashboard?date=${previous(date)}`)}>Previous</button>
+			<button type="button" onClick={() => history.push(`/dashboard?date=${today()}`)}>Today</button>
+			<button type="button" onClick={() => history.push(`/dashboard?date=${next(date)}`)}>Next</button>
     </main>
   );
 }
