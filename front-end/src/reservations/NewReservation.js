@@ -13,13 +13,16 @@ export default function NewReservation() {
 		reservation_time: "",
 		people: "",
     }
+    const [reservationData, setReservationData] = useState(initialReservation)
 
     // Working on validation
     const [errors, setErrors] = useState([]);
-    const validateDate = () => {
-        const reserveDate = new Date(reservationData.reservation_date);
+
+        
+    const validateDate = (foundErrors) => {
+        const reserveDate = new Date(`${reservationData.reservation_date}T${reservationData.reservation_time}:00.000`)
+        console.log(reserveDate)
         const todaysDate = new Date()
-        const foundErrors = [];
         // the Date class has many functions, one of which returns the day (0 is sunday, 6 is saturday)
         if (reserveDate.getDay() === 2) {
             foundErrors.push({ message: "Reservations cannot be made on a Tuesday (Restaurant is closed)." });
@@ -27,15 +30,41 @@ export default function NewReservation() {
         if (reserveDate < todaysDate) {
             foundErrors.push({ message: "Reservations cannot be made in the past." });
         }
-        setErrors(foundErrors);
+
+        if(reserveDate.getHours() < 10 || (reserveDate.getHours() === 10 && reserveDate.getMinutes() < 30)) {
+            foundErrors.push({ message: "Reservation cannot be made: Restaurant is not open until 10:30AM." });
+        } else if(reserveDate.getHours() > 22 || (reserveDate.getHours() === 22 && reserveDate.getMinutes() >= 30)) {
+            foundErrors.push({ message: "Reservation cannot be made: Restaurant is closed after 10:30PM." });
+        } else if(reserveDate.getHours() > 21 || (reserveDate.getHours() === 21 && reserveDate.getMinutes() > 30)) {
+            foundErrors.push({ message: "Reservation cannot be made: Reservation must be made at least an hour before closing (10:30PM)." })
+        }
         if(foundErrors.length > 0) {
             return false;
         }
         // if we get here, our reservation date is valid!
         return true;
     }
+ 
+    const validateFields = (foundErrors) => {
+        for(const field in reservationData) {
+            if(reservationData[field] === "") {
+                foundErrors.push({ message: `${field.split("_").join(" ")} cannot be left blank.`})
+            }
+        }
 
-    const [reservationData, setReservationData] = useState(initialReservation)
+        if(reservationData.people <= 0) {
+            foundErrors.push({ message: "Party must be a size of at least 1." })
+        }
+
+        if(foundErrors.length > 0) {
+            return false;
+        }
+        return true;
+    }
+
+
+
+
     const handleChange = ({target: {name,value}}) => {
         setReservationData(prevData => ({
             ...prevData,
@@ -44,9 +73,13 @@ export default function NewReservation() {
     }
     const handleSubmit = (e) => {
         e.preventDefault();
-        if(validateDate()) {
+        const foundErrors = []
+        console.log(validateDate(foundErrors))
+        console.log(validateFields(foundErrors))
+        if(validateDate(foundErrors) && validateFields(foundErrors)) {
             history.push(`/dashboard?date=${reservationData.reservation_date}`);
         }
+        setErrors(foundErrors);
     }
 
     const renderedErrors = () => {
