@@ -38,9 +38,17 @@ function update(reservation_id, status) {
         .update({ status: status });
 }
 
+function edit(reservation_id, reservation) {
+	return knex(tableName)
+		.where({ reservation_id: reservation_id })
+		.update({ ...reservation })
+		.returning("*");
+}
+
 module.exports = {
     list,
     create,
 	read,
-	update
+	update,
+	edit
 }
