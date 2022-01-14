@@ -61,14 +61,15 @@ async function fetchJson(url, options, onCancel) {
 
 export async function listReservations(params, signal) {
   const url = new URL(`${API_BASE_URL}/reservations`);
-  Object.entries(params).forEach(([key, value]) =>
-    url.searchParams.append(key, value.toString())
-  );
-  console.log(url)
+
+  if(params) {
+    Object.entries(params).forEach(([key, value]) =>
+      url.searchParams.append(key, value.toString())
+    );
+  }
+
   return await fetchJson(url, { headers, signal, method: "GET" }, []);
-  // return await fetchJson(url, { headers, signal }, [])
-  //   .then(formatReservationDate)
-  //   .then(formatReservationTime);
+
 }
 
 export async function createReservation(reservation, signal) {
@@ -79,4 +80,32 @@ export async function createReservation(reservation, signal) {
 
 	// we add method: "POST" as a part of the options, and also attach the body
 	return await fetchJson(url, { headers, signal, method: "POST", body }, []);
+}
+
+
+export async function listTables(signal) {
+  const url = `${API_BASE_URL}/tables`;
+  return await fetchJson(url, { headers, signal }, []);
+}
+
+export async function createTable(table, signal) {
+  const url = `${API_BASE_URL}/tables`;
+
+  const body = JSON.stringify({ data: table });
+
+  return await fetchJson(url, { headers, signal, method: "POST", body }, []);
+}
+
+export async function seatTable(reservation_id, table_id, signal) {
+  const url = `${API_BASE_URL}/tables/${table_id}/seat`;
+
+  const body = JSON.stringify({ data: { reservation_id: reservation_id } });
+
+  return await fetchJson(url, { headers, signal, method: "PUT", body }, []);
+}
+
+export async function finishTable(table_id, signal) {
+  const url = `${API_BASE_URL}/tables/${table_id}/seat`;
+
+  return await fetchJson(url, { headers, signal, method: "DELETE" }, []);
 }

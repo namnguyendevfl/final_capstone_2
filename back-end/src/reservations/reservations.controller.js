@@ -36,7 +36,7 @@ async function validateBody(req, res, next) {
 		return next({ status: 400, message: "'reservation_date' or 'reservation_time' field is in an incorrect format" });
 	}
 
-	if(isNaN(req.body.data.people) === true) {
+	if(typeof req.body.data.people !== "number") {
 		return next({ status: 400, message: "'people' field must be a number" });
 	}
 
@@ -87,8 +87,26 @@ async function create(req, res) {
 	res.status(201).json({ data: response[0] });
 }
 
+async function validateReservationId(req, res, next) {
+    const { reservation_id } = req.params;
+    const reservation = await service.read(Number(reservation_id));
+
+    if(!reservation) {
+        return next({ status: 404, message: `reservation id ${reservation_id} does not exist` });
+    }
+
+    res.locals.reservation = reservation;
+
+    next();
+}
+
+async function read(req, res) {
+	res.status(200).json({ data: res.locals.reservation });
+}
+
 module.exports = {
 	list: asyncErrorBoundary(list),
 	create: [asyncErrorBoundary(validateData), asyncErrorBoundary(validateBody), asyncErrorBoundary(validateDate), asyncErrorBoundary(create)],
+	read: [asyncErrorBoundary(validateReservationId), asyncErrorBoundary(read)],
 
 };

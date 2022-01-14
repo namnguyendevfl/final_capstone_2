@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-
 import { Redirect, Route, Switch } from "react-router-dom";
 import Dashboard from "../dashboard/Dashboard";
 import NotFound from "./NotFound";
@@ -7,7 +6,7 @@ import { today } from "../utils/date-time";
 import NewReservation from "../reservations/NewReservation";
 import useQuery from "../utils/useQuery";
 import NewTable from "../tables/NewTable";
-import { listReservations } from "../utils/api";
+import { listReservations, listTables } from "../utils/api";
 import SeatReservation from "../reservations/SeatReservation";
 import Search from "../search/Search";
 
@@ -38,11 +37,15 @@ function Routes() {
       .then(setReservations)
       .catch(setReservationsError);
 
+    listTables(abortController.signal)
+			.then((tables) => tables.sort((tableA, tableB) => tableA.table_id - tableB.table_id))
+			.then(setTables)
+			.catch(setTablesError);
     return () => abortController.abort();
+
   }
 
-
-  console.log(reservations)
+  console.log(tables)
   return (
     <Switch>
       <Route exact={true} path="/">
@@ -52,7 +55,9 @@ function Routes() {
         <Redirect to={"/dashboard"} />
       </Route>
       <Route exact path = "/reservations/new">
-        <NewReservation />
+        <NewReservation 
+					loadDashboard={loadDashboard}
+        />
       </Route>
       <Route exact={true} path="/reservations/:reservation_id/seat">
         <SeatReservation
@@ -67,7 +72,9 @@ function Routes() {
         />
       </Route>
       <Route exact path = "/tables/new">
-        <NewTable />
+        <NewTable 
+					loadDashboard={loadDashboard}
+        />
       </Route>
       <Route path="/search">
         <Search />

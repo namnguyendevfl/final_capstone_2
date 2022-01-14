@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 import ErrorAlert from "../layout/ErrorAlert"
+import { createTable } from "../utils/api";
 
-export default function NewTable() {
+export default function NewTable({loadDashboard}) {
 	const history = useHistory();
 
-	const [error, setError] = useState([]);
+	const [error, setError] = useState(null);
     const initialTable = {
         table_name: "",
 		capacity: 1,
@@ -18,10 +19,13 @@ export default function NewTable() {
 
 	const handleSubmit = (e) => {
 		e.preventDefault();
-
-        console.log(validateFields())
+        const abortController = new AbortController()
+        
 		if(validateFields()) {
-			history.push(`/dashboard`);
+			createTable(tableData, abortController.signal)
+				.then(loadDashboard)
+				.then(() => history.push(`/dashboard`))
+				.catch(setError);
 		}
 	}
 
@@ -40,6 +44,7 @@ export default function NewTable() {
 		return foundError === null;
 	}
 
+    console.log(error)
 	return (
 		<form onSubmit={handleSubmit}>
 			<ErrorAlert error={error} />

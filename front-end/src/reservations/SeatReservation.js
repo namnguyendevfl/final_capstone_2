@@ -1,29 +1,59 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useHistory, useParams } from "react-router";
+import ErrorAlert from "../layout/ErrorAlert";
+import { listReservations, seatTable } from "../utils/api";
 
-export default function SeatReservation({ reservations, tables }) {
+export default function SeatReservation({ tables, loadDashboard }) {
     const history = useHistory();
 	const [tableId, setTableId] = useState(0);
+	const [reservations, setReservations] = useState([]);
+	const [reservationsError, setReservationsError] = useState(null);
 	const [errors, setErrors] = useState([]);
+	const [apiError, setApiError] = useState(null);
 	const { reservation_id } = useParams();
+
+	useEffect(() => {
+    	const abortController = new AbortController();
+
+    	setReservationsError(null);
+
+    	listReservations(null, abortController.signal)
+      		.then(setReservations)
+      		.catch(setReservationsError);
+
+    	return () => abortController.abort();
+  	}, []);
 
 	if(!tables || !reservations) return null;
 
 	const handleChange = ({ target: {value} }) => {
+		console.log("value changed", value)
 		setTableId(value);
 	}
 	const handleSubmit = (e) => {
 		e.preventDefault();
+		// console.log("submitted")
+		const abortController = new AbortController();
+
+		// console.log(validateSeat())
 		if(validateSeat()) {
-			history.push(`/dashboard`);
+			console.log("found")
+			seatTable(reservation_id, tableId, abortController.signal)
+				.then(loadDashboard)
+				.then(() => history.push(`/dashboard`))
+				.catch(setApiError);
 		}
 	}
-	
+	// console.log(tables)
+	// console.log(reservations)
+	// console.log(tableId)
 	const validateSeat = () => {
 		const foundErrors = [];
 		const foundTable = tables.find((table) => table.table_id === Number(tableId));
 		const foundReservation = reservations.find((reservation) => reservation.reservation_id === Number(reservation_id));
 
+		console.log(foundTable.capacity)
+		console.log(reservations)
 		if(!foundTable) {
 			foundErrors.push("The table you selected does not exist.");
 		}
@@ -54,13 +84,17 @@ export default function SeatReservation({ reservations, tables }) {
 
 	return (
 		<form onSubmit = {handleSubmit}>
+			{/* {errorsJSX()} */}
+			<ErrorAlert error={apiError} />
+			{/* <ErrorAlert error={reservationsError} /> */}
 		<label htmlFor="table_id">Choose table:</label>
 		<select 
 			name="table_id" 
 			id="table_id"
             value={tableId}
 			onChange={handleChange}
-		>
+		>	
+			<option value = "">Select a table</option>
             {renderedTableOptions()}
 		</select>
 
