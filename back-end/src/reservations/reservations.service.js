@@ -26,9 +26,15 @@ function read(reservation_id) {
         .where({ reservation_id: reservation_id })
         .first();
 }
+function update(reservation_id, status) {
+    return knex(tableName)
+        .where({ reservation_id: reservation_id })
+        .update({ status: status });
+}
 
 module.exports = {
     list,
     create,
-	read
+	read,
+	update
 }

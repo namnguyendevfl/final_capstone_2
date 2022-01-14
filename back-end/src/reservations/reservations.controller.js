@@ -6,8 +6,11 @@ const asyncErrorBoundary = require("../errors/asyncErrorBoundary");
 
 async function list(req, res) {
 	const date = req.query.date;
+	const mobile_number = req.query.mobile_number;
 
-	const response = await service.list(date);
+	const reservations = await service.list(date, mobile_number);
+
+	const response = reservations.filter((reservation) => reservation.status !== "finished");
 
 	res.json({ data: response });
 }
@@ -104,9 +107,33 @@ async function read(req, res) {
 	res.status(200).json({ data: res.locals.reservation });
 }
 
+async function validateUpdateBody(req, res, next) {
+	if(!req.body.data.status) {
+		return next({ status: 400, message: "body must include a status field" });
+	}
+
+	if(req.body.data.status !== "booked" && req.body.data.status !== "seated" &&
+		req.body.data.status !== "finished" && req.body.data.status !== "cancelled") {
+		return next({ status: 400, message: `'status' field cannot be ${req.body.data.status}` });
+	}
+
+	if(res.locals.reservation.status === "finished") {
+		return next({ status: 400, message: `a finished reservation cannot be updated` });
+	}
+
+	next();
+}
+
+async function update(req, res) {
+	await service.update(res.locals.reservation.reservation_id, req.body.data.status);
+
+	res.status(200).json({ data: { status: req.body.data.status } });
+}
+
 module.exports = {
 	list: asyncErrorBoundary(list),
 	create: [asyncErrorBoundary(validateData), asyncErrorBoundary(validateBody), asyncErrorBoundary(validateDate), asyncErrorBoundary(create)],
 	read: [asyncErrorBoundary(validateReservationId), asyncErrorBoundary(read)],
+	update: [asyncErrorBoundary(validateData), asyncErrorBoundary(validateReservationId), asyncErrorBoundary(validateUpdateBody), asyncErrorBoundary(update)],
 
 };
