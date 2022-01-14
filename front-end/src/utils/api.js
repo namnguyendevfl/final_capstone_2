@@ -33,6 +33,7 @@ async function fetchJson(url, options, onCancel) {
   try {
     const response = await fetch(url, options);
 
+    console.log(response)
     if (response.status === 204) {
       return null;
     }
@@ -63,7 +64,19 @@ export async function listReservations(params, signal) {
   Object.entries(params).forEach(([key, value]) =>
     url.searchParams.append(key, value.toString())
   );
-  return await fetchJson(url, { headers, signal }, [])
-    .then(formatReservationDate)
-    .then(formatReservationTime);
+  console.log(url)
+  return await fetchJson(url, { headers, signal, method: "GET" }, []);
+  // return await fetchJson(url, { headers, signal }, [])
+  //   .then(formatReservationDate)
+  //   .then(formatReservationTime);
+}
+
+export async function createReservation(reservation, signal) {
+	const url = `${API_BASE_URL}/reservations`;
+
+	// this will convert our object into readable JSON as a string
+	const body = JSON.stringify({ data: reservation });
+
+	// we add method: "POST" as a part of the options, and also attach the body
+	return await fetchJson(url, { headers, signal, method: "POST", body }, []);
 }

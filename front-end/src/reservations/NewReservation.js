@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useHistory, useParams } from "react-router";
 import ErrorAlert from "../layout/ErrorAlert";
+import { createReservation } from "../utils/api";
 
 
 export default function NewReservation({edit, reservations}) {
@@ -90,13 +91,19 @@ export default function NewReservation({edit, reservations}) {
             ...prevData,
             [name]: value
         }))
+        console.log(isNaN(reservationData.people))
     }
     const handleSubmit = (e) => {
         e.preventDefault();
+		const abortController = new AbortController();
+
         const foundErrors = []
         console.log(validateDate(foundErrors))
         console.log(validateFields(foundErrors))
         if(validateDate(foundErrors) && validateFields(foundErrors)) {
+            createReservation(reservationData, abortController.signal)
+            .then(console.log)
+            .catch(console.log)
             history.push(`/dashboard?date=${reservationData.reservation_date}`);
         }
         setErrors(foundErrors);

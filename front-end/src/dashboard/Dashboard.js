@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from "react";
-import { listReservations } from "../utils/api";
+import React from "react";
 import ErrorAlert from "../layout/ErrorAlert";
 import { previous, today, next } from "../utils/date-time";
 import { useHistory } from "react-router";
@@ -13,10 +12,8 @@ import TableRow from "./TableRow";
  * @returns {JSX.Element}
  */
 
-
-
 function Dashboard({ date, reservations, reservationsError, tables, tablesError, loadDashboard }) {
-  
+  console.log(reservations)
   const history = useHistory();
 
   const renderedReservationBody = () => {
@@ -36,9 +33,7 @@ function Dashboard({ date, reservations, reservationsError, tables, tablesError,
         <h4 className="mb-0">Reservations for date</h4>
       </div>
       <ErrorAlert error={reservationsError} />
-      {JSON.stringify(reservations)}
-
-      <table class="table">
+      <table className="table">
 			<thead>
 				<tr>
 					<th scope="col">ID</th>
@@ -64,7 +59,7 @@ function Dashboard({ date, reservations, reservationsError, tables, tablesError,
 
 		<ErrorAlert error={tablesError} />
 
-		<table class="table">
+		<table className="table">
 			<thead>
 				<tr>
 					<th scope="col">ID</th>

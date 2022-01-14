@@ -40,6 +40,9 @@ function Routes() {
 
     return () => abortController.abort();
   }
+
+
+  console.log(reservations)
   return (
     <Switch>
       <Route exact={true} path="/">
@@ -72,7 +75,6 @@ function Routes() {
       <Route path="/dashboard">
         <Dashboard 
           date={date ? date : today()} 
-          date={date ? date : today()}
           reservations={reservations}
           reservationsError={reservationsError}
           tables={tables}
