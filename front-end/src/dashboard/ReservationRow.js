@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { updateReservationStatus } from "../utils/api";
 
-export default function ReservationRow({ reservation }) {
+export default function ReservationRow({ reservation, loadDashboard }) {
 	// returning "null" inside of a react component basically means return nothing. however, we always want to make sure we return null if we intend to return nothing.
 	if(!reservation) return null;
 
