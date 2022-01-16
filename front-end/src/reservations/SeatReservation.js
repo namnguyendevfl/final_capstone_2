@@ -27,33 +27,24 @@ export default function SeatReservation({ tables, loadDashboard }) {
 	if(!tables || !reservations) return null;
 
 	const handleChange = ({ target: {value} }) => {
-		console.log("value changed", value)
 		setTableId(value);
 	}
 	const handleSubmit = (e) => {
 		e.preventDefault();
-		// console.log("submitted")
 		const abortController = new AbortController();
 
-		// console.log(validateSeat())
 		if(validateSeat()) {
-			console.log("found")
 			seatTable(reservation_id, tableId, abortController.signal)
 				.then(loadDashboard)
 				.then(() => history.push(`/dashboard`))
 				.catch(setApiError);
 		}
 	}
-	// console.log(tables)
-	// console.log(reservations)
-	// console.log(tableId)
+
 	const validateSeat = () => {
 		const foundErrors = [];
 		const foundTable = tables.find((table) => table.table_id === Number(tableId));
 		const foundReservation = reservations.find((reservation) => reservation.reservation_id === Number(reservation_id));
-
-		console.log(foundTable.capacity)
-		console.log(reservations)
 		if(!foundTable) {
 			foundErrors.push("The table you selected does not exist.");
 		}
@@ -74,21 +65,22 @@ export default function SeatReservation({ tables, loadDashboard }) {
 		
 	}
 
-
     const renderedTableOptions = () => {
-        return tables.map((table) => 
-            // make sure to include the value
-            // the option text i have here is required for the tests as included in the instructions
-            <option value={table.table_id}>{table.table_name} - {table.capacity}</option>);
+        return tables.map((table, idx) => 
+            <option key = {idx} value={table.table_id}>{table.table_name} - {table.capacity}</option>);
     };
 
+	const renderedErrors = () => {
+		return errors.map((error, idx) => <ErrorAlert key={idx} error={error} />);
+	};
 	return (
 		<form onSubmit = {handleSubmit}>
-			{/* {errorsJSX()} */}
+			{renderedErrors()}
 			<ErrorAlert error={apiError} />
-			{/* <ErrorAlert error={reservationsError} /> */}
+			<ErrorAlert error={reservationsError} />
 		<label htmlFor="table_id">Choose table:</label>
 		<select 
+			className="form-control"
 			name="table_id" 
 			id="table_id"
             value={tableId}
@@ -98,8 +90,8 @@ export default function SeatReservation({ tables, loadDashboard }) {
             {renderedTableOptions()}
 		</select>
 
-		<button type="submit" >Submit</button>
-		<button type="button" onClick={history.goBack}>Cancel</button>
+		<button className="btn btn-primary m-1" type="submit" >Submit</button>
+		<button className="btn btn-danger m-1" type="button" onClick={history.goBack}>Cancel</button>
 	</form>
 	);
 }

@@ -2,8 +2,6 @@
  * Defines the base URL for the API.
  * The default values is overridden by the `API_BASE_URL` environment variable.
  */
-import formatReservationDate from "./format-reservation-date";
-import formatReservationTime from "./format-reservation-date";
 
 const API_BASE_URL =
   process.env.REACT_APP_API_BASE_URL || "http://localhost:5000";
@@ -33,7 +31,6 @@ async function fetchJson(url, options, onCancel) {
   try {
     const response = await fetch(url, options);
 
-    console.log(response)
     if (response.status === 204) {
       return null;
     }
@@ -114,6 +111,14 @@ export async function editReservation(reservation_id, reservation, signal) {
   const url = `${API_BASE_URL}/reservations/${reservation_id}`;
 
   const body = JSON.stringify({ data: reservation });
+
+  return await fetchJson(url, { headers, signal, method: "PUT", body }, []);
+}
+
+export async function updateReservationStatus(reservation_id, status, signal) {
+  const url = `${API_BASE_URL}/reservations/${reservation_id}/status`;
+
+  const body = JSON.stringify({ data: { status: status }});
 
   return await fetchJson(url, { headers, signal, method: "PUT", body }, []);
 }

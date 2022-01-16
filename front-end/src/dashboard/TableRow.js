@@ -1,27 +1,19 @@
-import React, { useState } from "react";
-import { useHistory } from "react-router";
+import React from "react";
 import { finishTable } from "../utils/api";
 
 export default function TableRow({ table, loadDashboard }) {
-    const history = useHistory();
-	const [error, setError] = useState(null);
-
 	if(!table) return null;
-
-	
     const handleFinish = () => {
         if(window.confirm("Is this table ready to seat new guests? This cannot be undone.")) {
 			const abortController = new AbortController();
 
 			finishTable(table.table_id, abortController.signal)
 				.then(loadDashboard)
-				.catch(setError);
 
 			return () => abortController.abort();
 		}
     }
 
-	console.log(error)
 	return (
 		<tr>
 			<th scope="row">{table.table_id}</th>

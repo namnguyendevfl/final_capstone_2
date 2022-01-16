@@ -1,16 +1,19 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { updateReservationStatus } from "../utils/api";
 
-// note that i pass in a reservation object as a prop:
 export default function ReservationRow({ reservation }) {
 	// returning "null" inside of a react component basically means return nothing. however, we always want to make sure we return null if we intend to return nothing.
 	if(!reservation) return null;
 
     const handleCancel = () => {
         if(window.confirm("Do you want to cancel this reservation? This cannot be undone.")) {
-            // api call will go here eventually
-    
-            window.location.reload(); 
+            const abortController = new AbortController();
+
+			updateReservationStatus(reservation.reservation_id, "cancelled", abortController.status)
+				.then(loadDashboard);
+
+			return () => abortController.abort();
         }
 	}
 	return (

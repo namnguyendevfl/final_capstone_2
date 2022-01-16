@@ -30,7 +30,7 @@ export default function Search() {
 		// you will see that i used the same ReservationRow component that we used in the Dashboard. yay less work!
 		reservations.map((reservation) => 
 			<ReservationRow key={reservation.reservation_id} reservation={reservation} />) :
-		<p>No reservations found</p>;
+			<tr><td>No reservations found</td></tr>;
     }
 	return (
 		<div>
@@ -49,8 +49,8 @@ export default function Search() {
 
 				<button className="btn btn-primary m-1" type="submit" onClick={handleSubmit}>Find</button>
 			</form>
-            <table class="table m-1">
-			<thead class="thead-light">
+            <table className="table m-1">
+			<thead className="thead-light">
 				<tr>
 					<th scope="col">ID</th>
 					<th scope="col">First Name</th>

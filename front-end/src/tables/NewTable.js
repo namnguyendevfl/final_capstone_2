@@ -44,7 +44,6 @@ export default function NewTable({loadDashboard}) {
 		return foundError === null;
 	}
 
-    console.log(error)
 	return (
 		<form onSubmit={handleSubmit}>
 			<ErrorAlert error={error} />
