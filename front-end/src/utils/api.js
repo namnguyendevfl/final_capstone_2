@@ -109,3 +109,11 @@ export async function finishTable(table_id, signal) {
 
   return await fetchJson(url, { headers, signal, method: "DELETE" }, []);
 }
+
+export async function editReservation(reservation_id, reservation, signal) {
+  const url = `${API_BASE_URL}/reservations/${reservation_id}`;
+
+  const body = JSON.stringify({ data: reservation });
+
+  return await fetchJson(url, { headers, signal, method: "PUT", body }, []);
+}

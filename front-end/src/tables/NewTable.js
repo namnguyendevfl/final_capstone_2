@@ -51,6 +51,7 @@ export default function NewTable({loadDashboard}) {
             <div>
                 <label htmlFor="table_name">Table Name:&nbsp;</label>
                 <input 
+                    className="form-control"
                     name="table_name"
                     id="table_name"
                     type="text"
@@ -64,6 +65,7 @@ export default function NewTable({loadDashboard}) {
             <div>
                 <label htmlFor="capacity">Capacity:&nbsp;</label>
                 <input 
+                    className="form-control"
                     name="capacity"
                     id="capacity"
                     type="number"
@@ -75,8 +77,8 @@ export default function NewTable({loadDashboard}) {
             </div>
 			
             <div>
-                <button type="submit" >Submit</button>
-                <button type="button" onClick={history.goBack}>Cancel</button>
+                <button className="btn btn-primary m-1" type="submit" >Submit</button>
+                <button className="btn btn-danger m-1" type="button" onClick={history.goBack}>Cancel</button>
             </div>
 		</form>
 	);

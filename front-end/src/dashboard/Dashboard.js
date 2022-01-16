@@ -13,7 +13,6 @@ import TableRow from "./TableRow";
  */
 
 function Dashboard({ date, reservations, reservationsError, tables, tablesError, loadDashboard }) {
-  console.log(reservations)
   const history = useHistory();
 
   const renderedReservationBody = () => {
@@ -25,16 +24,41 @@ function Dashboard({ date, reservations, reservationsError, tables, tablesError,
     return tables.map((table) => 
 			<TableRow key={table.table_id} table={table} loadDashboard={loadDashboard} />);
 	};
+	function handleClick({ target }) {
+		let newDate;
+		let useDate;
 
+		if(!date) {
+			useDate = today();
+		}
+		else {
+			useDate = date;
+		}
+
+		if(target.name === "previous") {
+			newDate = previous(useDate);
+		}
+		else if(target.name === "next") {
+			newDate = next(useDate);
+		}
+		else {
+			newDate = today();
+		}
+
+		history.push(`/dashboard?date=${newDate}`);
+	}
   return (
     <main>
       <h1>Dashboard</h1>
-      <div className="d-md-flex mb-3">
-        <h4 className="mb-0">Reservations for date</h4>
+      <div className="d-md-flex">
+        <h4 className="mb-0">Reservations for {date}</h4>
       </div>
+	  <button className="btn btn-secondary m-1" name="previous" type="button" onClick={handleClick}>Previous</button>
+	  <button className="btn btn-primary m-1" name="today" type="button" onClick={handleClick}>Today</button>
+	  <button className="btn btn-secondary m-1" name="next" type="button" onClick={handleClick}>Next</button>
       <ErrorAlert error={reservationsError} />
-      <table className="table">
-			<thead>
+      <table className="table m-1">
+			<thead className="thead-light">
 				<tr>
 					<th scope="col">ID</th>
 					<th scope="col">First Name</th>
@@ -73,9 +97,7 @@ function Dashboard({ date, reservations, reservationsError, tables, tablesError,
         {renderedTableBody()}
 			</tbody>
 		</table>
-      <button type="button" onClick={() => history.push(`/dashboard?date=${previous(date)}`)}>Previous</button>
-			<button type="button" onClick={() => history.push(`/dashboard?date=${today()}`)}>Today</button>
-			<button type="button" onClick={() => history.push(`/dashboard?date=${next(date)}`)}>Next</button>
+      		
     </main>
   );
 }

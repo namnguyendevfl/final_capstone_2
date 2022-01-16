@@ -34,10 +34,11 @@ export default function Search() {
     }
 	return (
 		<div>
-			<form>
+			<form >
                 <ErrorAlert error = {error} />
-				<label htmlFor="mobile_number">Enter a customer's phone number:</label>
+				<label className="form-label" htmlFor="mobile_number">Enter a customer's phone number:</label>
 				<input 
+					className="form-control"
 					name="mobile_number"
 					id="mobile_number"
 					type="tel"
@@ -46,9 +47,9 @@ export default function Search() {
 					required
 				/>
 
-				<button type="submit" onClick={handleSubmit}>Find</button>
+				<button className="btn btn-primary m-1" type="submit" onClick={handleSubmit}>Find</button>
 			</form>
-            <table class="table">
+            <table class="table m-1">
 			<thead class="thead-light">
 				<tr>
 					<th scope="col">ID</th>
@@ -58,6 +59,8 @@ export default function Search() {
 					<th scope="col">Time</th>
 					<th scope="col">People</th>
 					<th scope="col">Status</th>
+					<th scope="col">Edit</th>
+					<th scope="col">Cancel</th>
 					<th scope="col">Seat</th>
 				</tr>
 			</thead>

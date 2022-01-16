@@ -1,10 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useHistory, useParams } from "react-router";
 import ErrorAlert from "../layout/ErrorAlert";
-import { createReservation } from "../utils/api";
+import { createReservation, editReservation, listReservations } from "../utils/api";
 
-
-export default function NewReservation({edit, reservations}) {
+export default function NewReservation({edit, reservations, loadDashboard}) {
     const history = useHistory();
     const { reservation_id } = useParams();
     const initialReservation = {
@@ -16,35 +15,49 @@ export default function NewReservation({edit, reservations}) {
 		people: "",
     }
     const [reservationData, setReservationData] = useState(initialReservation)
-
-    // Working on validation
     const [errors, setErrors] = useState([]);
+	const [apiError, setApiError] = useState(null);
+	const [reservationsError, setReservationsError] = useState(null);
 
-    if(edit) {
-        // if either of these don't exist, we cannot continue.
-        if(!reservations || !reservation_id) return null;
-        const foundReservation = reservations.find((reservation) => 
-            reservation.reservation_id === Number(reservation_id));
-        if(!foundReservation || foundReservation.status !== "booked") {
-            return <p>Only booked reservations can be edited.</p>;
-        }
-        setReservationData({
-            first_name: foundReservation.first_name,
-            last_name: foundReservation.last_name,
-            mobile_number: foundReservation.mobile_number,
-            reservation_date: foundReservation.reservation_date,
-            reservation_time: foundReservation.reservation_time,
-            people: foundReservation.people,
-            reservation_id: foundReservation.reservation_id,
-        });
-    }
+    useEffect(() => {
+		if(edit) {
+			if(!reservation_id) return null;
+
+			loadReservations()
+				.then((response) => response.find((reservation) => 
+					reservation.reservation_id === Number(reservation_id)))
+				.then(fillFields);
+		}
+
+		function fillFields(foundReservation) {
+			if(!foundReservation || foundReservation.status !== "booked") {
+				return <p>Only booked reservations can be edited.</p>;
+			}
+
+			const date = new Date(foundReservation.reservation_date);
+			const dateString = `${date.getFullYear()}-${('0' + (date.getMonth() + 1)).slice(-2)}-${('0' + (date.getDate())).slice(-2)}`;
+	
+			setReservationData({
+				first_name: foundReservation.first_name,
+				last_name: foundReservation.last_name,
+				mobile_number: foundReservation.mobile_number,
+				reservation_date: dateString,
+				reservation_time: foundReservation.reservation_time,
+				people: foundReservation.people,
+			});
+		}
+
+		async function loadReservations() {
+			const abortController = new AbortController();
+			return await listReservations(null, abortController.signal)
+				.catch(setReservationsError);
+		}
+	}, [edit, reservation_id]);
 
 
     const validateDate = (foundErrors) => {
         const reserveDate = new Date(`${reservationData.reservation_date}T${reservationData.reservation_time}:00.000`)
-        console.log(reserveDate)
         const todaysDate = new Date()
-        // the Date class has many functions, one of which returns the day (0 is sunday, 6 is saturday)
         if (reserveDate.getDay() === 2) {
             foundErrors.push({ message: "Reservations cannot be made on a Tuesday (Restaurant is closed)." });
         }
@@ -62,7 +75,6 @@ export default function NewReservation({edit, reservations}) {
         if(foundErrors.length > 0) {
             return false;
         }
-        // if we get here, our reservation date is valid!
         return true;
     }
  
@@ -84,27 +96,29 @@ export default function NewReservation({edit, reservations}) {
     }
 
 
-
-
     const handleChange = ({target: {name,value}}) => {
         setReservationData(prevData => ({
             ...prevData,
-            [name]: value
+            [name]: name === "people" ? Number(value) : value
         }))
-        console.log(isNaN(reservationData.people))
     }
     const handleSubmit = (e) => {
         e.preventDefault();
 		const abortController = new AbortController();
-
         const foundErrors = []
-        console.log(validateDate(foundErrors))
-        console.log(validateFields(foundErrors))
         if(validateDate(foundErrors) && validateFields(foundErrors)) {
-            createReservation(reservationData, abortController.signal)
-            .then(console.log)
-            .catch(console.log)
-            history.push(`/dashboard?date=${reservationData.reservation_date}`);
+            if(edit) {
+				editReservation(reservation_id, reservationData, abortController.signal)
+					.then(loadDashboard)
+					.then(() => history.push(`/dashboard?date=${reservationData.reservation_date}`))
+					.catch(setApiError);
+			}
+			else {
+				createReservation(reservationData, abortController.signal)
+					.then(loadDashboard)
+					.then(() => history.push(`/dashboard?date=${reservationData.reservation_date}`))
+					.catch(setApiError);
+			}
         }
         setErrors(foundErrors);
     }
@@ -115,9 +129,13 @@ export default function NewReservation({edit, reservations}) {
     return (
         <form onSubmit={handleSubmit}>
             {renderedErrors()}
+			<ErrorAlert error={apiError} />
+			<ErrorAlert error={reservationsError} />
+
             <div>
-                <label htmlFor="first_name">First Name:&nbsp;</label>
+                <label className="form-label" htmlFor="first_name">First Name:&nbsp;</label>
                 <input 
+                    className="form-control"
                     name="first_name"
                     id="first_name"
                     type="text"
@@ -130,6 +148,7 @@ export default function NewReservation({edit, reservations}) {
             <div>
                 <label htmlFor="last_name">Last Name:&nbsp;</label>
                 <input 
+                    className="form-control"
                     name="last_name"
                     id="last_name"
                     type="text"
@@ -142,6 +161,7 @@ export default function NewReservation({edit, reservations}) {
             <div>
                 <label htmlFor="mobile_number">Mobile Number:&nbsp;</label>
                 <input 
+                    className="form-control"
                     name="mobile_number"
                     id="mobile_number"
                     type="text"
@@ -154,6 +174,7 @@ export default function NewReservation({edit, reservations}) {
             <div>
                 <label htmlFor="reservation_date">Reservation Date:&nbsp;</label>
                 <input 
+                    className="form-control"
                     name="reservation_date" 
                     id="reservation_date"
                     type="date"
@@ -166,6 +187,7 @@ export default function NewReservation({edit, reservations}) {
             <div>
                 <label htmlFor="reservation_time">Reservation Time:&nbsp;</label>
                 <input 
+                    className="form-control"
                     name="reservation_time" 
                     id="reservation_time"
                     type="time"
@@ -178,6 +200,7 @@ export default function NewReservation({edit, reservations}) {
             <div>
                 <label htmlFor="people">Party Size:&nbsp;</label>
                 <input 
+                    className="form-control"
                     name="people"
                     id="people"
                     type="number"
@@ -188,8 +211,8 @@ export default function NewReservation({edit, reservations}) {
                 />
             </div>
 
-			<button type="submit" >Submit</button>
-			<button type="button" onClick={history.goBack}>Cancel</button>
+			<button className="btn btn-primary m-1" type="submit" >Submit</button>
+			<button className="btn btn-danger m-1" type="button" onClick={history.goBack}>Cancel</button>
 		</form>
     )
 }
