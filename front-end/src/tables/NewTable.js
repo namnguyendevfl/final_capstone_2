@@ -14,7 +14,7 @@ export default function NewTable({loadDashboard}) {
 	const [tableData, setTableData] = useState(initialTable);
 
 	const handleChange = ({ target: { name, value } }) => {
-		setTableData(prevData => ({ ...prevData, [name]: value }));
+		setTableData(prevData => ({ ...prevData, [name]: name === "capacity" ? Number(value) : value }));
 	}
 
 	const handleSubmit = (e) => {
