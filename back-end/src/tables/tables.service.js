@@ -14,7 +14,7 @@ const create = (newTable) => {
 const free = (table_id) => {
     return  knex(tableName)
             .where({table_id})
-            .update({reservation_id:null})
+            .update({ reservation_id: null, status: "free" });
 }
 
 const updateReservation = (reservation_id, status) => {

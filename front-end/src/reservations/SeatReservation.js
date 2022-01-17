@@ -29,10 +29,10 @@ export default function SeatReservation({ tables, loadDashboard }) {
 	const handleChange = ({ target: {value} }) => {
 		setTableId(value);
 	}
+	
 	const handleSubmit = (e) => {
 		e.preventDefault();
 		const abortController = new AbortController();
-
 		if(validateSeat()) {
 			seatTable(reservation_id, tableId, abortController.signal)
 				.then(loadDashboard)

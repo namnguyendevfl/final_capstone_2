@@ -6,14 +6,10 @@ import { listReservations } from "../utils/api";
 export default function Search() {
     const [mobileNumber, setMobileNumber] = useState("");
     const [reservations, setReservations] = useState([]);
-
-    // and, this state, well, stores an error if we get one
     const [error, setError] = useState(null);
-
     const handleChange = ({ target: { value } }) => {
         setMobileNumber(value);
     }
-
     const handleSubmit = (e) => {
         e.preventDefault();
         const abortController = new AbortController();
@@ -24,10 +20,8 @@ export default function Search() {
 
         return () => abortController.abort();
     }
-
     const searchResults = () => {
         return reservations.length > 0 ?
-		// you will see that i used the same ReservationRow component that we used in the Dashboard. yay less work!
 		reservations.map((reservation) => 
 			<ReservationRow key={reservation.reservation_id} reservation={reservation} />) :
 			<tr><td>No reservations found</td></tr>;
