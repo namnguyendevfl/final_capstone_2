@@ -7,18 +7,11 @@
 require('dotenv').config();
 const path = require("path");
 
-// const {
-//   DATABASE_URL = "postgres://cutajfyf:L4yMUJSdkOTq55lnpKqTfo1hLSEfWR2e@fanny.db.elephantsql.com/cutajfyf",
-//   DATABASE_URL_DEVELOPMENT = "postgres://cutajfyf:L4yMUJSdkOTq55lnpKqTfo1hLSEfWR2e@fanny.db.elephantsql.com/cutajfyf",
-//   DATABASE_URL_TEST = "postgres://cutajfyf:L4yMUJSdkOTq55lnpKqTfo1hLSEfWR2e@fanny.db.elephantsql.com/cutajfyf",
-//   DATABASE_URL_PREVIEW = "postgres://cutajfyf:L4yMUJSdkOTq55lnpKqTfo1hLSEfWR2e@fanny.db.elephantsql.com/cutajfyf",
-//   DEBUG,
-// } = process.env;
 const {
-  DATABASE_URL,
-  DATABASE_URL_DEVELOPMENT,
-  DATABASE_URL_TEST,
-  DATABASE_URL_PREVIEW,
+  DATABASE_URL = "postgres://cutajfyf:L4yMUJSdkOTq55lnpKqTfo1hLSEfWR2e@fanny.db.elephantsql.com/cutajfyf",
+  DATABASE_URL_DEVELOPMENT = "postgres://cutajfyf:L4yMUJSdkOTq55lnpKqTfo1hLSEfWR2e@fanny.db.elephantsql.com/cutajfyf",
+  DATABASE_URL_TEST = "postgres://cutajfyf:L4yMUJSdkOTq55lnpKqTfo1hLSEfWR2e@fanny.db.elephantsql.com/cutajfyf",
+  DATABASE_URL_PREVIEW = "postgres://cutajfyf:L4yMUJSdkOTq55lnpKqTfo1hLSEfWR2e@fanny.db.elephantsql.com/cutajfyf",
   DEBUG,
 } = process.env;
 
